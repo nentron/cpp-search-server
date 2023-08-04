@@ -1,22 +1,20 @@
 #include <algorithm>
-#include <cmath>
 #include <iostream>
-#include <map>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
+#include <map>
+#include <cmath>
 
 using namespace std;
 
-
-const int MAX_RESULT_DOCUMENT_COUNT = 5;
-const int ONE = 1;
-const double DOUBLE_ONE = 1.0;
-const int ZERO = 0;
+const int MAX_RESULT_DOCUMENT_COUNT = 5U;
+const int ONE = 1U;
+const double DOUBLE_ONE = 1.0f;
+const int ZERO = 0U;
 const char SPACE = ' ';
 const char MINUS = '-';
-
 
 string ReadLine() {
     string s;
@@ -76,9 +74,9 @@ public:
         ++documents_count_;
         const vector<string> query = SplitIntoWordsNoStop(document);
         const int query_size = query.size();
+        const double term_frequency = DOUBLE_ONE / query_size;
 
         for (const string& word : query) {
-            double term_frequency = DOUBLE_ONE / query_size;
             documents_[word][document_id] += term_frequency;
         }
     }
@@ -132,6 +130,11 @@ private:
 
         return query_words;
     }
+    
+    static double CountInverseDocumentFrequency(
+        const int& amount_documents, const int& size_word_ids ) {
+        return log( static_cast<double>(amount_documents) /size_word_ids );
+    }
 
     vector<Document> FindAllDocuments(const Query& query_words) const {
         vector<Document> matched_documents;
@@ -139,11 +142,11 @@ private:
 
         for (const string& plus : query_words.plus_words) {
             if (documents_.count(plus) != ZERO ){
-                const auto& word_contains = documents_.at(plus);
-                const double inverse_doc_frequency = log(
-                    static_cast<double>(documents_count_) / word_contains.size()
+                const auto& word_ids = documents_.at(plus);
+                const double inverse_doc_frequency = CountInverseDocumentFrequency(
+                    documents_count_, word_ids.size()
                 );
-                for (const auto& [id, term_frequency] : word_contains ) {
+                for (const auto& [id, term_frequency] : word_ids ) {
                     doc_relevance[id] += term_frequency * inverse_doc_frequency;
                 }
             }
