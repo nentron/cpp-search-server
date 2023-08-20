@@ -1,11 +1,13 @@
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <set>
 #include <string>
 #include <utility>
-#include <vector>
 #include <map>
-#include <cmath>
+#include <numeric>
+#include <vector>
+
 
 using namespace std;
 
@@ -107,10 +109,9 @@ public:
         return matched_documents;
     }
 
-    vector<Document> FindTopDocuments(
-        const string& raw_query,
-        const DocumentStatus& doc_status = DocumentStatus::ACTUAL
-    ) const {
+    vector<Document> FindTopDocuments(const string& raw_query,
+            const DocumentStatus& doc_status = DocumentStatus::ACTUAL ) const {
+
         return FindTopDocuments(
             raw_query,
             [doc_status](
@@ -183,10 +184,8 @@ private:
             return ZERO;
         }
 
-        int rating_sum = 0;
-        for (const int rating : ratings) {
-            rating_sum += rating;
-        }
+        int rating_sum = accumulate(ratings.begin(), ratings.end(), ZERO);
+
 
         return rating_sum / static_cast<int>(ratings.size());
     }
