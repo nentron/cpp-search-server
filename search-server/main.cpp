@@ -12,10 +12,10 @@
 using namespace std;
 
 
-const int MAX_RESULT_DOCUMENT_COUNT = 5U;
-const int ONE = 1U;
-const double DOUBLE_ONE = 1.0f;
-const int ZERO = 0U;
+const int MAX_RESULT_DOCUMENT_COUNT = 5;
+const int ONE = 1;
+const double DOUBLE_ONE = 1.0;
+const int ZERO = 0;
 const char SPACE = ' ';
 const char MINUS = '-';
 const double ELIPSON = 1e-6;
@@ -55,18 +55,6 @@ vector<string> SplitIntoWords(const string& text) {
 }
 
 
-template <typename StringContainer>
-set<string> MakeUniqueNonEmptyStrings(const StringContainer& strings) {
-    set<string> non_empty_strings;
-    for (const string& str : strings) {
-        if (!str.empty()) {
-            non_empty_strings.insert(str);
-        }
-    }
-    return non_empty_strings;
-}
-
-
 struct Document {
     Document() = default;
 
@@ -80,6 +68,7 @@ struct Document {
     double relevance = 0.0;
     int rating = 0;
 };
+
 
 template <typename StringContainer>
 set<string> MakeUniqueNonEmptyStrings(const StringContainer& strings) {
@@ -110,12 +99,8 @@ public:
     }
 
     explicit SearchServer(const string& stop_words_text)
-        : SearchServer(
-            SplitIntoWords(stop_words_text))  // Invoke delegating constructor from string container
+        : SearchServer(SplitIntoWords(stop_words_text))
     {
-        if (!IsValidStopWords()){
-            throw invalid_argument("Stop Words must not contain special symbols"s);
-        }
     }
 
     inline static constexpr int INVALID_DOCUMENT_ID = -1;
@@ -123,10 +108,10 @@ public:
     void AddDocument(int document_id, const string& document, DocumentStatus status,
                      const vector<int>& ratings) {
         if (documents_.count(document_id) != ZERO
-            || document_id <= INVALID_DOCUMENT_ID || !IsValidWord(document)){
-            throw invalid_argument("Args have an unpropriet value"s);
+            || document_id <= INVALID_DOCUMENT_ID){
+            throw invalid_argument("Invalid document's id"s);
         }
-        
+
         const auto& words = SplitIntoWordsNoStop(document);
         const double inv_word_count = DOUBLE_ONE / words.size();
 
@@ -191,7 +176,7 @@ public:
         int document_id) const {
         const auto& query = ParseQuery(raw_query);
         if (document_id < ZERO){
-            throw invalid_argument("Id should be more positive"s);
+            throw invalid_argument("Id should be positive"s);
         }
         vector<string> matched_words;
 
@@ -215,15 +200,10 @@ public:
         }
 
         return {matched_words, documents_.at(document_id).status};
-        
     }
 
     int GetDocumentId(int index) const {
-        try {
-            return index_to_doc_id_.at(index);
-        } catch (const out_of_range& e){
-            throw out_of_range("Invalid index");
-        }
+        return index_to_doc_id_.at(index);
     }
 private:
     struct DocumentData {
@@ -251,6 +231,9 @@ private:
         vector<string> words;
 
         for (const string& word : SplitIntoWords(text)) {
+            if (!IsValidWord(word)){
+                throw invalid_argument("Unvalueable word is "s + word);
+            }
             if (!IsStopWord(word)) {
                 words.push_back(word);
             }
@@ -263,10 +246,7 @@ private:
         if (ratings.empty()) {
             return ZERO;
         }
-        int rating_sum = 0;
-        for (const int rating : ratings) {
-            rating_sum += rating;
-        }
+        int rating_sum = accumulate(ratings.begin(), ratings.end(), ZERO);
         return rating_sum / static_cast<int>(ratings.size());
     }
 
@@ -281,7 +261,7 @@ private:
 
         if (text[ZERO] == MINUS) {
             is_minus = true;
-            text = text.substr(1);
+            text = text.substr(ZERO);
         }
         if (!IsValidWord(text) || text[ZERO] == MINUS || text.empty()){
             throw invalid_argument("Invalid query words"s);
