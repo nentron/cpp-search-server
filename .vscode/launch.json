@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/Sengo/Dev/cpp-search-server",
-      "program": "c:/Users/Sengo/Dev/cpp-search-server/build/Debug/outDebug",
+      "cwd": "c:/Users/Sengo/Dev/cpp-search-server/search-server",
+      "program": "c:/Users/Sengo/Dev/cpp-search-server/search-server/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

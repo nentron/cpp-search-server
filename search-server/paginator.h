@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <stdexcept>
 #include <vector>
 
@@ -63,4 +64,12 @@ private:
 template <typename Container>
 auto Paginate(const Container& c, size_t page_size) {
     return Paginator(begin(c), end(c), page_size);
+}
+
+template <typename Iterator>
+std::ostream& operator<<(std::ostream& output, RangeIterator<Iterator> iter){
+    for (auto it = iter.begin(); it != iter.end(); ++it){
+        output << *it;
+    }
+    return output;
 }

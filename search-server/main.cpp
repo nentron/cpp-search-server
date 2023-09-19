@@ -13,23 +13,6 @@ const int MAX_RESULT_DOCUMENT_COUNT = 5;
 using namespace std;
 
 
-
-ostream& operator<<(ostream& output, const Document& doc) {
-    output << "{ document_id = "s << doc.id << ", relevance = "s
-        << doc.relevance << ", rating = "s << doc.rating << " }"s;
-    return output;
-}
-
-template <typename Iterator>
-ostream& operator<<(ostream& output, RangeIterator<Iterator> iter){
-    for (auto it = iter.begin(); it != iter.end(); ++it){
-        output << *it;
-    }
-    return output;
-}
-
-
-
 int main() {
     SearchServer search_server("and in at"s);
     RequestQueue request_queue(search_server);

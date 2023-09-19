@@ -1,5 +1,8 @@
-//Вставьте сюда своё решение из урока «Очередь запросов» темы «Стек, очередь, дек».‎
 #pragma once
+
+#include <iostream>
+
+using std::operator""s;
 
 struct Document {
     Document() = default;
@@ -19,3 +22,5 @@ enum class DocumentStatus {
     BANNED,
     REMOVED,
 };
+
+std::ostream& operator<<(std::ostream& output, const Document& doc);
